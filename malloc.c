@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <syscall.h>
 
-int __syscall11( int number, intptr_t p1 ){
+int __syscall1( int number, intptr_t p1 ){
     int ret;
     asm volatile ("int $0x80" : "=a" (ret) : "a" (number), "b" (p1));
     return ret;
@@ -17,7 +17,7 @@ void* __sbrk__(intptr_t increment)
     void *new, *old = (void *)syscall(__NR_brk, 0);
 
     //new = (void *)syscall(__NR_brk, ((uintptr_t)old) + increment);
-    new = (void *)__syscall11(__NR_brk, ((uintptr_t)old) + increment);
+    new = (void *)__syscall1(__NR_brk, ((uintptr_t)old) + increment);
 
     return (((uintptr_t)new) == (((uintptr_t)old) + increment)) ? old :
         (void *)-1;
