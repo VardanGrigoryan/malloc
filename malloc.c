@@ -81,7 +81,7 @@ static Header *morecore(unsigned nu)
   
     up = (Header *) cp;  
     up->s.size = nu;  
-    _free((void *)(up + 1));  
+    _free((void *)(up + 1));  // The bolck containes the header and free space. And up + 1 means performing _free only for free space (free space comes after header, the header does not change) 
   
     return freep;  
 }  
@@ -104,12 +104,12 @@ void *_malloc(unsigned nbytes)
             if (p->s.size == nunits) {  
                 prevp->s.ptr = p->s.ptr;  
             } else {  
-                p->s.size -= nunits;  
+                p->s.size -= nunits; // allocate the tail of the list. Calculate the difference between p->s.size and nunits then increase the p pointer by this diffference.
                 p += p->s.size;  
                 p->s.size = nunits;  
             }  
             freep = prevp;  
-            return (void *)(p+1);  
+            return (void *)(p+1); // The bolck containes the header and free space. And p+1 means that p starts to point to free space (after header) 
         }  
   
         if (p == freep)  
