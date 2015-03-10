@@ -14,7 +14,8 @@ int __syscall1( int number, intptr_t p1 ){
 
 void* __sbrk__(intptr_t increment)
 {
-    void *new, *old = (void *)syscall(__NR_brk, 0);
+    //void *new, *old = (void *)syscall(__NR_brk, 0);
+    void *new, *old = (void *)__syscall1(__NR_brk, 0);
 
     //new = (void *)syscall(__NR_brk, ((uintptr_t)old) + increment);
     new = (void *)__syscall1(__NR_brk, ((uintptr_t)old) + increment);
