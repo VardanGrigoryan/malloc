@@ -14,12 +14,16 @@ int __syscall1( int number, intptr_t p1 ){
 
 void* __sbrk__(intptr_t increment)
 {
-    //void *new, *old = (void *)syscall(__NR_brk, 0);
+    /*
+     * Calling sbrk() with an increment of 0 can be used to find the current 
+     * location of the program break.
+     * The program break is the first location after the end of the 
+     * uninitialized data segment. Program break means the top of the Heap). 
+     * Increasing the program break has the effect of allocating memory 
+     * to the process; decreasing the break deallocates memory.
+      */
     void *new, *old = (void *)__syscall1(__NR_brk, 0);
-
-    //new = (void *)syscall(__NR_brk, ((uintptr_t)old) + increment);
     new = (void *)__syscall1(__NR_brk, ((uintptr_t)old) + increment);
-
     return (((uintptr_t)new) == (((uintptr_t)old) + increment)) ? old :
         (void *)-1;
 }
