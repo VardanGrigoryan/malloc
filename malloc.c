@@ -1,10 +1,10 @@
-#include <stdlib.h>  
-#include <stdio.h>
+
 #include <linux/unistd.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>  
 #include <syscall.h>
 #include <unistd.h>
-#include <stdint.h>
-#include <syscall.h>
 
 int __syscall1( int number, intptr_t p1 ){
     int ret;
