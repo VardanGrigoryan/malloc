@@ -6,6 +6,11 @@
 #include <syscall.h>
 #include <unistd.h>
 
+struct max_align_t {
+    long long __max_align_ll __attribute__((__aligned__(__alignof__(long long))));
+    long double __max_align_ld __attribute__((__aligned__(__alignof__(long double))));
+} ;
+
 int __syscall1( int number, intptr_t p1 ){
     int ret;
     asm volatile ("int $0x80" : "=a" (ret) : "a" (number), "b" (p1));
@@ -28,7 +33,7 @@ void* __sbrk__(intptr_t increment)
         (void *)-1;
 }
 
-typedef long Align;  
+typedef struct max_align_t Align;  
   
 union header {  
     struct {  
