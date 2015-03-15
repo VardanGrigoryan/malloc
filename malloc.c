@@ -104,23 +104,38 @@ void *_malloc(unsigned nbytes)
     nunits = (nbytes + sizeof(Header) - 1) / sizeof(Header) + 1;  
   
     if ((prevp = freep) == NULL) {  
-        base.s.ptr = freep = prevp = &base;  
+        /*
+         * The base variable is the global, static variable therefor all its data-member are initialized to 0 by default.
+         * The freep variable means the head or start of the free-list and because free-list is cyrcular, each time updated.
+         * */
+        base.s.ptr = freep = prevp = &base;  // starting initilializations
         base.s.size = 0;  
     }  
-  
+    /*
+     * keeps the previous pointer prep and iterates through free-list if there is no big-enough block and continues prior to accomplish the end of the free-list.
+     * if there is big-enough block and when its size equals to requested size, the next pointer of the prevp starts to point to the next block after p pointer. Thereby it removes this block and return
+     * pointer after the head of this block.
+     * */
     for (p = prevp->s.ptr; ; prevp = p, p = p->s.ptr) {  
   
         if (p->s.size >= nunits) {  
             if (p->s.size == nunits) {  
                 prevp->s.ptr = p->s.ptr;  
-            } else {  
+            } else { 
+                /*
+                 * cuts the tail of the block
+                 * */
                 p->s.size -= nunits; // allocate the tail of the list. Calculate the difference between p->s.size and nunits then increase the p pointer by this diffference.
                 p += p->s.size;  
                 p->s.size = nunits;  
             }  
-            freep = prevp;  
+            freep = prevp; // update the start(head) of the free-list, now the prevp starts to point to freep and freep now is the start of the free-list. 
             return (void *)(p+1); // The bolck containes the header and free space. And p+1 means that p starts to point to free space (after header) 
-        }  
+        } 
+        /*
+         * if it is the end of the free-list and there is not a memory, it requests to os to allocate the block of the memory.
+         * p == freep means that is reached to the end of the free-list.
+         * */
   
         if (p == freep)  
             if ((p = morecore(nunits)) == NULL)  
